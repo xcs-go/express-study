@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/xcs-go/express-study/issues"
   },
-  "homepage": "https://github.com/xcs-go/express-study#readme"
+  "homepage": "https://github.com/xcs-go/express-study#readme",
+  "dependencies": {
+    "express": "^4.15.3"
+  }
 }
