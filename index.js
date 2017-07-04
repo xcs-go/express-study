@@ -27,13 +27,24 @@ const port = process.env.PORT || 3000;
 app.use(express.static(__dirname + '/public'));
 
 /**
+ * 测试页面
+ */
+app.use(function (req, res, next) {
+    res.locals.showTests = app.get('env') !== 'production' && req.query.test === '1';
+    next();
+});
+
+/**
  * 设置页面路由
  */
 app.get('/',function (req, res) {
     res.render('home');
 });
 app.get('/about',function (req, res) {
-    res.render('about',{fortune:fortune.getFortune()});
+    res.render('about',{
+        fortune:fortune.getFortune(),
+        pageTestScript:'/qa/tests-about.js'
+    });
 });
 
 /**
