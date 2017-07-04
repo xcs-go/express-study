@@ -2,13 +2,19 @@
  * Created by 1t8l7j2 on 2017/7/4.
  */
 const express = require('express');
-
+const handlebars = require('express3-handlebars').create({defaultLayout:'layout'});
+const fortune = require('./lib/fortune.js');
 /**
  *
  * 创建一个express应用
  */
+const app = express();
 
- const app = express();
+/**
+ * 设置模板引擎
+ */
+app.engine('handlebars',handlebars.engine);
+app.set('view engine','handlebars');
 
 /**
  * 设置node应用程序的环境端口号
@@ -16,25 +22,26 @@ const express = require('express');
 const port = process.env.PORT || 3000;
 
 /**
+ * 设置静态文件资源
+ */
+app.use(express.static(__dirname + '/public'));
+
+/**
  * 设置页面路由
  */
 app.get('/',function (req, res) {
-    res.type('text/plain');
-    res.send('Meadowlark Travel');
+    res.render('home');
 });
 app.get('/about',function (req, res) {
-    res.type('text/plain');
-    res.send('About Meadowlark Travel');
+    res.render('about',{fortune:fortune.getFortune()});
 });
 
 /**
  * 设置404页面
  */
-app.use(function (req,res) {
-    console.log(45);
-    res.type('text/plain');
+app.use(function (req,res,next) {
     res.status(404);
-    res.send('404 Not Found');
+    res.render('404');
 });
 
 /**
@@ -42,9 +49,8 @@ app.use(function (req,res) {
  */
 app.use(function (err,req, res, next) {
     console.error(err.stack);
-    res.type('text/plain');
     res.status(500);
-    res.send('500 - Server Error')
+    res.render('500');
 });
 
 /**
