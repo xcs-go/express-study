@@ -2,8 +2,47 @@
  * Created by 1t8l7j2 on 2017/7/4.
  */
 const express = require('express');
-const handlebars = require('express3-handlebars').create({defaultLayout:'layout'});
+const handlebars = require('express3-handlebars').create({
+    defaultLayout:'layout',
+    helpers:{
+        section:function (name, options) {
+            if(!this._sections) this._sections = {};
+            this._sections[name] = options.fn(this);
+            return null;
+        }
+    }
+});
 const fortune = require('./lib/fortune.js');
+const getWeatherData = require('./lib/weather.js');
+
+/*function getWeatherData () {
+    return {
+        locations:[
+            {
+                name:'Portland',
+                forecastUrl:'http://www.wunderground.com/US/OR/Portland.html',
+                iconUrl:'http://icons-ak.wxug.com/i/c/k/cloudy.gif',
+                weather:'Overcast',
+                temp:'54.1 F (12.3 C)'
+            },
+            {
+                name:'Bend',
+                forecastUrl:'http://www.wunderground.com/US/OR/Bend.html',
+                iconUrl:'http://icons-ak.wxug.com/i/c/k/cloudy.gif',
+                weather:'Overcast',
+                temp:'54.1 F (12.3 C)'
+            },
+            {
+                name:'Manzanita',
+                forecastUrl:'http://www.wunderground.com/US/OR/Manzanita.html',
+                iconUrl:'http://icons-ak.wxug.com/i/c/k/cloudy.gif',
+                weather:'Overcast',
+                temp:'54.1 F (12.3 C)'
+            }
+        ]
+    }
+};*/
+
 /**
  *
  * 创建一个express应用
@@ -35,6 +74,15 @@ app.use(function (req, res, next) {
 });
 
 /**
+ * 中间件
+ */
+app.use(function (req, res, next) {
+    if(!res.locals.partials) res.locals.partials = {};
+    res.locals.partials.weather = getWeatherData.default;
+    next();
+});
+
+/**
  * 设置页面路由
  */
 app.get('/',function (req, res) {
@@ -45,6 +93,12 @@ app.get('/about',function (req, res) {
         fortune:fortune.getFortune(),
         pageTestScript:'/qa/tests-about.js'
     });
+});
+app.get('/tours/hood-river',function (req, res) {
+    res.render('tours/hood-river');
+});
+app.get('/tours/request-group-rate',function (req, res) {
+    res.render('tours/request-group-rate');
 });
 
 /**
@@ -70,3 +124,5 @@ app.use(function (err,req, res, next) {
 
 app.listen(port);
 console.log('Express started on http://localhost:' + port + ';press Ctrl-c to terminate');
+
+if(app.thing == null) console.log('bleat!');
