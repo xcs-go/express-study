@@ -82,6 +82,8 @@ app.use(function (req, res, next) {
     next();
 });
 
+app.use(require('body-parser')());
+
 /**
  * 设置页面路由
  */
@@ -99,6 +101,36 @@ app.get('/tours/hood-river',function (req, res) {
 });
 app.get('/tours/request-group-rate',function (req, res) {
     res.render('tours/request-group-rate');
+});
+
+app.get('/nursery-rhyme',function (req, res) {
+    res.render('nursery-rhyme');
+});
+
+app.get('/data/nursery-rhyme',function (req, res) {
+    res.json({
+        animal:'squirrel',
+        bodyPart:'tail',
+        adjective:'bushy',
+        noun:'heck'
+    });
+});
+
+/**
+ * 表单处理
+ */
+
+app.get('/newsletter',function (req, res) {
+    res.render('newsletter',{csrf:'CSRF token goes here'});
+});
+
+app.post('/process',function (req, res) {
+    console.log(req.accepts());
+   if(req.xhr || req.accepts('json,html') === 'json'){ // req.accepts()方法用于询问最佳返回格式
+       res.send({success:true})
+   }else {
+       res.redirect(303,'/thank you');
+   }
 });
 
 /**

@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/xcs-go/express-study#readme",
   "dependencies": {
+    "body-parser": "^1.17.2",
     "express": "^4.15.3",
     "express3-handlebars": "^0.5.2"
   },

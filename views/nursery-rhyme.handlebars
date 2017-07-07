@@ -1,0 +1,37 @@
+{{#section 'head'}}
+    <script src="//cdnjs.cloudfare.com/ajax/libs/handlebars.js/1.3.0/handlebars.min.js"></script>
+    <script id="nurseryRhymeeTemplate" type="text/x-handlebars-template">
+        Marry had a little <b>\{{animal}}</b>,its <b>\{{bodyPart}}</b> was <b>\{{adjective}}</b> as <b>\{{noun}}</b>
+    </script>
+{{/section}}
+
+{{#section 'jquery'}}
+    $(document).ready(function(){
+        const nurseryRhymeTemplate = Handlebars.compile($('#nurseryRhymeTemplate').html());
+        const $nurseryRhyme = $('#nurseryRhyme');
+        $('#btnNurseryRhyme').on('click',function(evt){
+            console.log(2);
+            evt.preventDefault();
+            $nurseryRhyme.html(nurseryRhymeTemplate({
+                animal:'basilisk',
+                bodyPart:'tail',
+                adjective:'sharp',
+                noun:'a needle'
+            }));
+        });
+        $('#btnNurseryRhymeAjax').on('click',function(evt){
+            console.log(1);
+            evt.preventDefault();
+            $.ajax('/data/nursery-rhyme',{
+                success:function(data){
+                    $nurseryRhyme.html(nurseryRhymeTemplate(data));
+                }
+            });
+        });
+    });
+{{/section}}
+
+<div id="nurseryRhyme">click a button...</div>
+<hr>
+<button id="btnNurseryRhyme">Generate nursery rhyme</button>
+<button id="btnNurseryRhymeAjax">Generate nursery rhyme from AJAX</button>
