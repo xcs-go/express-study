@@ -12,36 +12,12 @@ const handlebars = require('express3-handlebars').create({
         }
     }
 });
+const formidable = require('formidable');
+const jqupload = require('jquery-file-upload-middleware');
+
+const credentials = require('./credentials');
 const fortune = require('./lib/fortune.js');
 const getWeatherData = require('./lib/weather.js');
-
-/*function getWeatherData () {
-    return {
-        locations:[
-            {
-                name:'Portland',
-                forecastUrl:'http://www.wunderground.com/US/OR/Portland.html',
-                iconUrl:'http://icons-ak.wxug.com/i/c/k/cloudy.gif',
-                weather:'Overcast',
-                temp:'54.1 F (12.3 C)'
-            },
-            {
-                name:'Bend',
-                forecastUrl:'http://www.wunderground.com/US/OR/Bend.html',
-                iconUrl:'http://icons-ak.wxug.com/i/c/k/cloudy.gif',
-                weather:'Overcast',
-                temp:'54.1 F (12.3 C)'
-            },
-            {
-                name:'Manzanita',
-                forecastUrl:'http://www.wunderground.com/US/OR/Manzanita.html',
-                iconUrl:'http://icons-ak.wxug.com/i/c/k/cloudy.gif',
-                weather:'Overcast',
-                temp:'54.1 F (12.3 C)'
-            }
-        ]
-    }
-};*/
 
 /**
  *
@@ -83,6 +59,8 @@ app.use(function (req, res, next) {
 });
 
 app.use(require('body-parser')());
+app.use(require('cookie-parser')(credentials.cookieSecret));
+app.use(require('express-session')());
 
 /**
  * 设置页面路由
@@ -132,6 +110,48 @@ app.post('/process',function (req, res) {
        res.redirect(303,'/thank you');
    }
 });
+
+/**
+ * 文件上传路由
+ */
+app.get('/contest/vacation-photo',function (req, res) {
+    let now = new Date();
+    res.render('contest/vacation-photo',{
+        year:now.getFullYear(),
+        month:now.getMonth() + 1
+    })
+});
+app.post('/contest/vacation-photo/:year/:month',function (req, res) {
+    let form = new formidable.IncomingForm();
+    form.parse(req,function (err, fields, files) {
+        if(err) return res.redirect(303,'/error');
+        console.log('received fields:');
+        console.log(fields);
+        console.log('received files:');
+        console.log(files);
+        res.redirect(303,'/thank-you');
+    })
+});
+
+/**
+ * jquery 文件上传
+ */
+app.use('/upload',function (req, res, next) {
+    let now = Date.now();
+    jqupload.fileHandler({
+        uploadDir:function () {
+            return __dirname + '/public/uploads' + now;
+        },
+        uploadUrl:function () {
+            return '/uploads' + now;
+        }
+    })(req,res,next)
+});
+
+app.get('/thank-you',function (req, res) {
+    res.send('thank you');
+});
+
 
 /**
  * 设置404页面
